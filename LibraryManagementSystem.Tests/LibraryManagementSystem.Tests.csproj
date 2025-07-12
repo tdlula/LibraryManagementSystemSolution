@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LibraryManagementSystem.Common\LibraryManagementSystem.Common.csproj" />
     <ProjectReference Include="..\LibraryManagementSystem.Infrastructure.DAL\LibraryManagementSystem.Infrastructure.DAL.csproj" />
     <ProjectReference Include="..\LibraryManagementSystem.Service\LibraryManagementSystem.Service.csproj" />
   </ItemGroup>
