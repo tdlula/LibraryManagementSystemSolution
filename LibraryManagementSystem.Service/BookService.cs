@@ -7,23 +7,34 @@ using System.ComponentModel.DataAnnotations;
 namespace LibraryManagementSystem.Service
 {
     /// <summary>
-    /// Business logic service for book operations
+    /// Business logic service for book operations. Handles CRUD and search operations for books.
     /// </summary>
     public class BookService : IBookService
     {
+        // Unit of work for repository and transaction management
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>
+        /// Constructor for BookService
+        /// </summary>
+        /// <param name="unitOfWork">Unit of work instance</param>
         public BookService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
+        /// <summary>
+        /// Gets all books in the system.
+        /// </summary>
         public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
         {
             var books = await _unitOfWork.Books.GetAllAsync();
             return books.Select(MapToDto);
         }
 
+        /// <summary>
+        /// Gets a book by its unique ID.
+        /// </summary>
         public async Task<BookDto> GetBookByIdAsync(Guid id)
         {
             var book = await _unitOfWork.Books.GetByIdAsync(id);
@@ -33,6 +44,9 @@ namespace LibraryManagementSystem.Service
             return MapToDto(book);
         }
 
+        /// <summary>
+        /// Gets a book by its ISBN.
+        /// </summary>
         public async Task<BookDto> GetBookByISBNAsync(string isbn)
         {
             ValidateISBN(isbn);
@@ -43,6 +57,9 @@ namespace LibraryManagementSystem.Service
             return MapToDto(book);
         }
 
+        /// <summary>
+        /// Searches for books by a search term (title, author, or ISBN).
+        /// </summary>
         public async Task<IEnumerable<BookDto>> SearchBooksAsync(string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
@@ -52,6 +69,9 @@ namespace LibraryManagementSystem.Service
             return books.Select(MapToDto);
         }
 
+        /// <summary>
+        /// Adds a new book to the system.
+        /// </summary>
         public async Task<BookDto> AddBookAsync(CreateBookDto createBookDto)
         {
             ValidateCreateBookDto(createBookDto);
@@ -83,6 +103,9 @@ namespace LibraryManagementSystem.Service
             }
         }
 
+        /// <summary>
+        /// Updates an existing book's details.
+        /// </summary>
         public async Task<BookDto> UpdateBookAsync(Guid id, UpdateBookDto updateBookDto)
         {
             ValidateUpdateBookDto(updateBookDto);
@@ -117,6 +140,9 @@ namespace LibraryManagementSystem.Service
             }
         }
 
+        /// <summary>
+        /// Deletes a book by its ID.
+        /// </summary>
         public async Task<bool> DeleteBookAsync(Guid id)
         {
             var book = await _unitOfWork.Books.GetByIdAsync(id);
@@ -138,6 +164,9 @@ namespace LibraryManagementSystem.Service
             }
         }
 
+        /// <summary>
+        /// Maps a Book entity to a BookDto.
+        /// </summary>
         private static BookDto MapToDto(Common.Entities.Book book)
         {
             return new BookDto
@@ -152,6 +181,9 @@ namespace LibraryManagementSystem.Service
             };
         }
 
+        /// <summary>
+        /// Validates a CreateBookDto using data annotations and custom logic.
+        /// </summary>
         private static void ValidateCreateBookDto(CreateBookDto dto)
         {
             var validationResults = new List<ValidationResult>();
@@ -166,6 +198,9 @@ namespace LibraryManagementSystem.Service
             ValidateISBN(dto.ISBN);
         }
 
+        /// <summary>
+        /// Validates an UpdateBookDto using data annotations and custom logic.
+        /// </summary>
         private static void ValidateUpdateBookDto(UpdateBookDto dto)
         {
             var validationResults = new List<ValidationResult>();
@@ -180,6 +215,9 @@ namespace LibraryManagementSystem.Service
             ValidateISBN(dto.ISBN);
         }
 
+        /// <summary>
+        /// Validates an ISBN for correct format and length.
+        /// </summary>
         private static void ValidateISBN(string isbn)
         {
             if (string.IsNullOrWhiteSpace(isbn))
